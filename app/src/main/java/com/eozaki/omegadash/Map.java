@@ -35,6 +35,10 @@ public class Map extends FragmentActivity {
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         setUpMapIfNeeded();
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        focusOnLocation(location);
     }
 
     public void searchAddress(View v){
@@ -78,14 +82,9 @@ public class Map extends FragmentActivity {
 
     private void setUpMap() {
         mMap.setMyLocationEnabled(true);
-        Location location = mMap.getMyLocation();
-        focusOnLocation();
     }
 
-    private void focusOnLocation(){
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+    private void focusOnLocation(Location location){
         if (location != null)
         {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
@@ -98,7 +97,6 @@ public class Map extends FragmentActivity {
                     .tilt(85)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
         }
     }
 }
