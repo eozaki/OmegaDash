@@ -68,6 +68,8 @@ public class Map extends FragmentActivity {
 
             }
         };
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, locationListener);
     }
 
     public void show(View v) {
