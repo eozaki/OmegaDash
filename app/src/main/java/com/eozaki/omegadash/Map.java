@@ -2,20 +2,26 @@ package com.eozaki.omegadash;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -41,6 +47,39 @@ public class Map extends FragmentActivity {
         Criteria criteria = new Criteria();
         Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
         focusOnLocation(location);
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                focusOnLocation(location);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+    }
+
+    public void show(View v) {
+        EditText textBar = (EditText) findViewById(R.id.addressText);
+        Button searchButton = (Button) findViewById(R.id.searchButton);
+        if (textBar.getVisibility() == View.GONE) {
+            textBar.setVisibility(View.VISIBLE);
+            searchButton.setVisibility(View.VISIBLE);
+        } else {
+            textBar.setVisibility(View.GONE);
+            searchButton.setVisibility(View.GONE);
+        }
     }
 
     public void searchAddress(View v){
