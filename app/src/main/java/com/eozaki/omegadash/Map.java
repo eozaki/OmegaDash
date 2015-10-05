@@ -2,8 +2,10 @@ package com.eozaki.omegadash;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -32,9 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Map extends FragmentActivity {
+public class Map extends FragmentActivity implements SensorEventListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private SensorManager sensorManager;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,11 @@ public class Map extends FragmentActivity {
         setUpMapIfNeeded();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
-        Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        criteria.setBearingRequired(true);
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setSpeedRequired(true);
+        location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         focusOnLocation(location);
         LocationListener locationListener = new LocationListener() {
             @Override
@@ -105,6 +114,18 @@ public class Map extends FragmentActivity {
     }
 
     @Override
+    public void onSensorChanged(SensorEvent event) {
+        float degrees = Math.round(event.values[0]);
+        location.setBearing(degrees);
+        focusOnLocation(location);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        return;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
@@ -123,20 +144,23 @@ public class Map extends FragmentActivity {
         }
     }
 
+
+
     private void setUpMap() {
         mMap.setMyLocationEnabled(true);
+    }
+
+    private void spinCameraTo(float degrees) {
+
     }
 
     private void focusOnLocation(Location location){
         if (location != null)
         {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(), location.getLongitude()), 13));
-
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
                     .zoom(19)                   // Sets the zoom
-                    .bearing(90)                // Sets the orientation of the camera to east
+                    .bearing(location.getBearing())                // Sets the orientation of the camera to east
                     .tilt(85)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
