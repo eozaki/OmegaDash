@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +64,13 @@ public class Map extends FragmentActivity implements SensorEventListener {
             }
         });
 
+        findViewById(R.id.searchButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchAddress(v);
+            }
+        });
+
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -90,13 +98,13 @@ public class Map extends FragmentActivity implements SensorEventListener {
 
     public void show(View v) {
         EditText textBar = (EditText) findViewById(R.id.addressText);
-//        Button searchButton = (Button) findViewById(R.id.searchButton);
+        FloatingActionButton searchButton = (FloatingActionButton) findViewById(R.id.searchButton);
         if (textBar.getVisibility() == View.GONE) {
             textBar.setVisibility(View.VISIBLE);
-//            searchButton.setVisibility(View.VISIBLE);
+            searchButton.setVisibility(View.VISIBLE);
         } else {
             textBar.setVisibility(View.GONE);
-//            searchButton.setVisibility(View.GONE);
+            searchButton.setVisibility(View.GONE);
         }
     }
 
