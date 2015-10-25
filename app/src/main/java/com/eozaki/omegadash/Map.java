@@ -1,6 +1,7 @@
 package com.eozaki.omegadash;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -38,7 +39,6 @@ import java.util.Locale;
 public class Map extends FragmentActivity implements SensorEventListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private SensorManager sensorManager;
     private Location location;
 
     @Override
@@ -54,8 +54,15 @@ public class Map extends FragmentActivity implements SensorEventListener {
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setSpeedRequired(true);
         location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         focusOnLocation(location);
+
+        findViewById(R.id.showButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                show(v);
+            }
+        });
+
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -83,13 +90,13 @@ public class Map extends FragmentActivity implements SensorEventListener {
 
     public void show(View v) {
         EditText textBar = (EditText) findViewById(R.id.addressText);
-        Button searchButton = (Button) findViewById(R.id.searchButton);
+//        Button searchButton = (Button) findViewById(R.id.searchButton);
         if (textBar.getVisibility() == View.GONE) {
             textBar.setVisibility(View.VISIBLE);
-            searchButton.setVisibility(View.VISIBLE);
+//            searchButton.setVisibility(View.VISIBLE);
         } else {
             textBar.setVisibility(View.GONE);
-            searchButton.setVisibility(View.GONE);
+//            searchButton.setVisibility(View.GONE);
         }
     }
 
