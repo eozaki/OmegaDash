@@ -41,6 +41,7 @@ public class Map extends FragmentActivity implements SensorEventListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Location location;
+    private Float lastBearing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class Map extends FragmentActivity implements SensorEventListener {
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setSpeedRequired(true);
         location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        lastBearing = location.getBearing();
         focusOnLocation(location);
 
         findViewById(R.id.showButton).setOnClickListener(new View.OnClickListener() {
@@ -170,12 +172,13 @@ public class Map extends FragmentActivity implements SensorEventListener {
     }
 
     private void focusOnLocation(Location location){
+        if (location.hasBearing()) lastBearing = location.getBearing();
         if (location != null)
         {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
                     .zoom(19)                   // Sets the zoom
-                    .bearing(location.getBearing())                // Sets the orientation of the camera to east
+                    .bearing(lastBearing)                // Sets the orientation of the camera to east
                     .tilt(85)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
